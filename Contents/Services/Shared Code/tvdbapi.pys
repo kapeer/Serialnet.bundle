@@ -1,0 +1,104 @@
+# -*- coding: utf-8 -*-
+import constants as const
+
+def GetSeriesId(show):
+    url = const.tvdbGetSeriesId_url.format(show.strip().replace(' ','%20'))
+    idXml = XML.ElementFromURL(url,timeout=10,cacheTime=float(604800)) #cashe for week
+    if idXml:
+        seriesId = idXml.xpath('/Data/Series/id')[0].text
+    else:
+        seriesId = None
+    return seriesId
+
+
+def GetSeriesData(seriesId):
+    seriesXml = XML.ElementFromURL(const.tvdbSeriesPath_url.format(seriesId,'pl'),cacheTime=float(86400)) #cashe for a day
+    return seriesXml
+
+
+def GetSeriesName(seriesXml):
+    name = seriesXml.xpath('/Data/Series/SeriesName')[0].text
+    return name
+
+
+def GetSeriesActors(seriesXml):
+    actors = seriesXml.xpath('/Data/Series/Actors')[0].text
+    return actors
+
+
+def GetSeriesNetwork(seriesXml):
+    network = seriesXml.xpath('/Data/Series/Network')[0].text
+    return network
+
+
+def GetSeriesDuration(seriesXml):
+    duration = seriesXml.xpath('/Data/Series/Runtime')[0].text
+    return duration
+
+
+def GetSeriesFanart(seriesXml):
+    fanart = seriesXml.xpath('/Data/Series/fanart')[0].text
+    if fanart:
+        return '{}{}'.format(const.tvdbImgPath_url,fanart)
+    else:
+        return fanart
+
+
+def GetSeriesEpisodes(seriesXml):
+    episodes = seriesXml.xpath('/Data/Episode')
+    return episodes
+
+
+def GetEpisodeNumber(episodeXml):
+    episodeNum = episodeXml.xpath('EpisodeNumber')[0].text
+    return episodeNum
+
+
+def GetSeasonNumber(episodeXml):
+    seasonNum = episodeXml.xpath('SeasonNumber')[0].text
+    return seasonNum
+
+
+def GetEpisodeName(episodeXml):
+    name = episodeXml.xpath('EpisodeName')[0].text
+    return name
+
+
+def GetEpisodeImg(episodeXml):
+    img = episodeXml.xpath('filename')[0].text
+    if img:
+        return '{}{}'.format(const.tvdbImgPath_url,img)
+    else:
+        return img
+
+
+def GetEpisodeDirectors(episodeXml):
+    directors = episodeXml.xpath('Director')[0]
+    return directors
+
+
+def GetEpisodeWriters(episodeXml):
+    writers = episodeXml.xpath('Writer')[0]
+    return writers
+
+
+def GetEpisodeFirstAired(episodeXml):
+    firstAired = episodeXml.xpath('FirstAired')[0].text
+    return firstAired
+
+
+def GetEpisodeSummary(episodeXml):
+    summary = episodeXml.xpath('Overview')[0].text
+    return summary
+
+
+def GetEpisodeCombinedEpisodeNumber(episodeXml):
+    episodeNum = episodeXml.xpath('Combined_episodenumber')[0].text
+    if '.' in episodeNum:
+        episodeNum = episodeNum.split('.')[0]
+    return episodeNum
+
+
+def GetEpisodeAbsoluteNumber(episodeXml):
+    episodeNum = episodeXml.xpath('absolute_number')[0].text
+    return episodeNum
