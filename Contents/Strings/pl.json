@@ -1,0 +1,21 @@
+{
+    "NAME": "Serialnet",
+    "MENU_ALL_SHOWS": "Wszystkie seriale",
+    "MENU_SEARCH": "Szukaj serialu",
+    "MENU_FAV_SHOWS": "Ulubione seriale",
+    "SUBMENU_ADD_FAV": "Dodaj do ulubionych",
+    "SUBMENU_DEL_FAV": "Usuń z ulubionych",
+    "MESSAGE_ALL": "Wszystkie",
+    "MESSAGE_SEARCH": "Szukaj",
+    "MESSAGE_ADDED": "Dodano do ulubionych",
+    "MESSAGE_REMOVED": "Usunięto z ulubionych",
+    "MESSAGE_NOTHING": "Tu nic nie ma...",
+    "STRING_SEASON": "Sezon {}",
+    "STRING_EPISODE": "Odcinek {}",
+    "STRING_EPISODE_RANGE": "Odcinki {}-{}",
+    "STRING_NUM_EPISODES": "{} Odcin(ek/ki/ów)",
+    "STRING_FAVOURITES": "Ulubione",
+    "STRING_SETTINGS": "Ustawienia",
+    "ERROR_NO_SHOWS": "Nie znaleziono seriali! Serwer może być przeładowany. Spróbuj ponownie za kilka minut...",
+    "ERROR_NO_SEASONS": "Nie znaleziono sezonów! Serwer może być przeładowany. Spróbuj ponownie za kilka minut..."
+}

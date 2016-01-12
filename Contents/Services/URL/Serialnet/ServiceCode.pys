@@ -1,0 +1,182 @@
+import tvdbapi as tvdb
+
+liveRtmpSupport = [ClientPlatform.Windows,ClientPlatform.Windows]
+
+###################################################################################################
+def MetadataObjectForURL(url):
+    from re import findall
+    season = 1
+    index = 1
+    art = None
+    thumb = None
+    summary = None
+    show = None
+    duration = None
+    fullTitle = url.split('/')[-1]
+    show = fullTitle.split('sezon')[0].replace('-',' ')
+    indexes = findall('sezon\-([0-9]+)\-odcinek\-([0-9]+)',fullTitle)
+    if indexes:
+        season = int(indexes[0][0])
+        index = int(indexes[0][1])
+
+    title = 'Episode {}'.format(index)
+    if bool(Prefs['useTvdb']):
+        seriesId = tvdb.GetSeriesId(show)
+        if seriesId:
+            seriesXml = tvdb.GetSeriesData(seriesId)
+            show = tvdb.GetSeriesName(seriesXml)
+            duration = int(tvdb.GetSeriesDuration(seriesXml))*60000
+            art = tvdb.GetSeriesFanart(seriesXml)
+            episodes = tvdb.GetSeriesEpisodes(seriesXml)
+            for episode in episodes:
+                episodeNum = tvdb.GetEpisodeNumber(episode)
+                seasonNum = tvdb.GetSeasonNumber(episode)
+                absoluteNumber = tvdb.GetEpisodeAbsoluteNumber(episode)
+                absoluteCombined = tvdb.GetEpisodeCombinedEpisodeNumber(episode)
+                if absoluteNumber:
+                    pass
+                elif absoluteCombined:
+                    absoluteNumber = absoluteCombined
+                else:
+                    absoluteNumber = 0
+                    
+                bMatch = False
+                if int(episodeNum) == index and int(seasonNum) == season:
+                    bMatch = True
+                elif int(absoluteNumber) == index:
+                    bMatch = True
+                
+                if bMatch:
+                    title = tvdb.GetEpisodeName(episode)
+                    thumb = tvdb.GetEpisodeImg(episode)
+                    #directors = tvdb.GetEpisodeDirectors(episode)
+                    #writers = tvdb.GetEpisodeWriters(episode)
+                    #firstAired = tvdb.GetEpisodeFirstAired(episode)
+                    summary = tvdb.GetEpisodeSummary(episode)
+                    break
+    
+    return EpisodeObject(
+            art = art,
+            thumb = thumb,
+            title = title,
+            summary = summary,
+            duration = duration,
+            show = show,
+            season = season,
+            index = index
+    )
+
+
+###################################################################################################
+
+def MediaObjectsForURL(url):
+    Log('URL: {}'.format(url))
+    from re import search,findall
+    try:
+        page = HTML.ElementFromURL(url,errors='replace',encoding='utf-8',cacheTime=float(86400))
+    except:
+        Log('Unable to access url={}'.format(url))
+    else:
+        video_url = None
+        player_url = None
+        for item in page.body.iter():
+            if item.tag == 'iframe':
+                if item.get('id') == 'framep':
+                    player_url = item.get('src')
+                    width = int(item.get('width').rstrip('px'))
+                    height = int(item.get('height').rstrip('px'))
+                    Log('Player url: {}, width = {}. height = {}'.format(player_url,width,height))
+                    break
+
+        if player_url:
+            player_page = HTML.ElementFromURL(player_url,errors='ignore',encoding='utf-8',cacheTime=float(86400))
+            player_page_string = HTML.StringFromElement(player_page)
+            if player_page_string:
+                oMatch = search('escape\(\'(http.*)\'',player_page_string)
+                if oMatch:
+                    if oMatch.groups():
+                        video_url = oMatch.group(1)
+                oMatch = search('var flm = \'(http.*)\';',player_page_string)
+                if oMatch:
+                    if oMatch.groups():
+                        video_url = oMatch.group(1)
+                if not video_url:
+                    lMatch = findall('eval.*,0,{}\)\)',player_page_string)
+                    if lMatch:
+                        video_url = decodeJS(lMatch[0])
+                if not video_url:
+                    oMatch = search('src:\s+\"(http.*)\"',player_page_string)
+                    if oMatch.groups():
+                        video_url = oMatch.group(1)
+                Log('VIDEO URL: {}'.format(video_url))
+                return [
+                        MediaObject(
+                            #aspect_ratio = width / height,
+                            aspect_ratio = height / width,
+                            #video_resolution = "480",
+                            #audio_channels = 2,
+                            parts = [PartObject(key=Callback(PlayVideo, url=video_url))]
+                        )
+                ]
+                
+                
+###################################################################################################
+
+def PlayVideo(url):
+
+    return Redirect(HTTPLiveStreamURL(url))
+
+
+def int2base(x, base):
+    import string
+    digs = string.digits + string.lowercase + string.uppercase
+    if x < 0: sign = -1
+    elif x==0: return '0'
+    else: sign = 1
+    x = x * sign
+    digits = []
+    while x:
+        digits.append(digs[x % base])
+        x = x / base
+    if sign < 0:
+        digits.append('-')
+    digits.reverse()
+    return ''.join(digits)
+
+
+def unpack(p, a, c, k, e=None, d=None):
+    from re import sub
+    for i in xrange(c-1,-1,-1):
+        if k[i]:
+            p = sub('\\b'+int2base(i,a)+'\\b', k[i], p)
+    return p
+
+
+def decodeJS(s):
+    from re import search
+    import base64, binascii
+    import os, string, StringIO
+    import urllib, urllib2, sys
+    import cgi
+
+    ret = ''
+    if len(s) > 0:
+        js = 'unpack' + s[s.find('}(')+1:-1]
+        js = js.replace("unpack('",'''unpack("''').replace(");'",''');"''').replace("\\","/")
+        js = js.replace("//","/").replace("/'","'")
+        js = js.lstrip('unpack("')
+        js = js.rstrip(')')
+        js = js.replace('"','')
+        lJs = js.split(',')
+        temp = lJs[3].replace('"','').replace("'",'')
+        temp = temp.split('.')[0]
+        temp = temp.split('|')
+        unpacked = unpack(lJs[0].replace('"',''),int(lJs[1]),int(lJs[2]),temp,int(lJs[4]),{})
+        match = search('escape\(.*\(\'(.*)\'\)',unpacked)
+        if match.groups():
+            ret = match.group(1)
+            ret = ret.replace("/x","")
+            ret = base64.b64decode(binascii.unhexlify(ret))
+            
+    return ret
+

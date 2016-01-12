@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>PlexFrameworkFlags</key>
+    <array>
+        <string>UseRealRTMP</string>
+    </array>
+    <key>URL</key>
+    <dict>
+        <key>Serialnet</key>
+        <dict>
+			<key>Identifier</key>
+			<string>com.plexapp.plugins.serialnet</string>
+            <key>URLPatterns</key>
+            <array>
+                <string>http://serialnet.pl/ogladaj-online/.+</string>
+            </array>
+        </dict>
+    </dict>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+[
+    {
+        "id": "episodesPerPage",
+        "label": "Episodes per group",
+        "type": "enum",
+        "values": ["5","10","15","20","25","30"],
+        "default": "5"
+    },
+    
+    {
+        "id": "useTvdb",
+        "label": "Use TVDB api to gather episode info",
+        "type": "bool",
+        "default":"true"
+    }
+]

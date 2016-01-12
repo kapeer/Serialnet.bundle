@@ -1,0 +1,21 @@
+{
+    "NAME": "Serialnet",
+    "MENU_ALL_SHOWS": "All Shows",
+    "MENU_SEARCH": "Search for show",
+    "MENU_FAV_SHOWS": "Favourite shows",
+    "SUBMENU_ADD_FAV": "Add to favourites",
+    "SUBMENU_DEL_FAV": "Remove from favourites",
+    "MESSAGE_ALL": "All",
+    "MESSAGE_SEARCH": "Search",
+    "MESSAGE_ADDED": "Added to Favourites",
+    "MESSAGE_REMOVED": "Removed from Favourites",
+    "MESSAGE_NOTHING": "Nothing to do...",
+    "STRING_SEASON": "Season {}",
+    "STRING_EPISODE": "Episode {}",
+    "STRING_EPISODE_RANGE": "Episodes {}-{}",
+    "STRING_NUM_EPISODES": "{} Episode(s)",
+    "STRING_FAVOURITES": "Favourites",
+    "STRING_SETTINGS": "Settings",
+    "ERROR_NO_SHOWS": "No shows found! Server might be overloaded. Please try again later in few minutes...",
+    "ERROR_NO_SEASONS": "No seasons found! Server might be overloaded. Please try again later in few minutes..."
+}

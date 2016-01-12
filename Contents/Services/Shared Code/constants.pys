@@ -1,0 +1,6 @@
+main_url = 'http://serialnet.pl'
+thumbs_url = 'http://static.serialnet.pl/serial/thumbs/'
+watch_url = main_url + '/ogladaj/'
+tvdbGetSeriesId_url = 'http://thetvdb.com/api/GetSeries.php?seriesname={}'
+tvdbSeriesPath_url = 'http://thetvdb.com/data/series/{}/all/{}.xml'
+tvdbImgPath_url = 'http://www.thetvdb.com/banners/_cache/'
