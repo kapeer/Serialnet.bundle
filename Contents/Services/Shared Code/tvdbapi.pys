@@ -2,7 +2,7 @@
 import constants as const
 
 def GetSeriesId(show):
-    url = const.tvdbGetSeriesId_url.format(show.strip().replace(' ','%20'))
+    url = const.tvdbGetSeriesId_url.format(show.strip().replace(' ','%20'),'pl')
     idXml = XML.ElementFromURL(url,timeout=10,cacheTime=float(604800)) #cashe for week
     if idXml:
         seriesId = idXml.xpath('/Data/Series/id')[0].text
@@ -12,7 +12,7 @@ def GetSeriesId(show):
 
 
 def GetSeriesData(seriesId):
-    seriesXml = XML.ElementFromURL(const.tvdbSeriesPath_url.format(seriesId,'pl'),cacheTime=float(86400)) #cashe for a day
+    seriesXml = XML.ElementFromURL(const.tvdbSeriesPath_url.format(const.tvdbApiKey,seriesId,'pl'),cacheTime=float(86400)) #cashe for a day
     return seriesXml
 
 
