@@ -106,8 +106,9 @@ def MediaObjectsForURL(url):
                         video_url = decodeJS(lMatch[0])
                 if not video_url:
                     oMatch = search('src:\s+\"(http.*)\"',player_page_string)
-                    if oMatch.groups():
-                        video_url = oMatch.group(1)
+                    if oMatch:
+                        if oMatch.groups():
+                            video_url = oMatch.group(1)
                 Log('VIDEO URL: {}'.format(video_url))
                 return [
                         MediaObject(

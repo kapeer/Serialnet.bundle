@@ -50,35 +50,44 @@ def GetShows(query=''):
             if "list" in str(item.get('id')):
                 for li in item.iterfind('li'):
                     for itag in li.getchildren():
-                            if itag.get('href') is not None:
-                                url = itag.get('href')
-                                title = itag.text
-                                thumb = None
-                                rating_key = unicode(url.split('/')[-1])
-                                if rating_key not in Dict["shows"]:
-                                    Dict["shows"][rating_key] = {}
-                                Dict["shows"][rating_key]["url"] = url
-                                Dict["shows"][rating_key]["title"] = title
-                                if "thumb" in Dict["shows"][rating_key]:
-                                    thumb = Dict["shows"][rating_key]["thumb"]
-                                bAdd = False
-                                if query != 'all':
-                                    oc.title2 = L('MESSAGE_SEARCH')
-                                    if query.lower() in title.lower():
-                                        bAdd = True
-                                else:
-                                    oc.title2 = L('MESSAGE_ALL')
+                        if itag.get('href') is not None:
+                            url = itag.get('href')
+                            if not url:
+                                Log('Can\'t find url for {}'.format(itag.text))
+                                continue
+                            title = itag.text
+                            if title == '':
+                                Log('Empty title for URL: {}'.format(url))
+                                continue
+                            thumb = None
+                            rating_key = unicode(url.split('/')[-1])
+                            if rating_key == '':
+                                Log('Invalid URL: {}'.format(url))
+                                continue
+                            if rating_key not in Dict["shows"]:
+                                Dict["shows"][rating_key] = {}
+                            Dict["shows"][rating_key]["url"] = url
+                            Dict["shows"][rating_key]["title"] = title
+                            if "thumb" in Dict["shows"][rating_key]:
+                                thumb = Dict["shows"][rating_key]["thumb"]
+                            bAdd = False
+                            if query != 'all':
+                                oc.title2 = L('MESSAGE_SEARCH')
+                                if query.lower() in title.lower():
                                     bAdd = True
+                            else:
+                                oc.title2 = L('MESSAGE_ALL')
+                                bAdd = True
 
-                                if bAdd:
-                                    oc.add(
-                                        TVShowObject(
-                                            key=Callback(GetSeasons,show=rating_key),
-                                            title=title,
-                                            rating_key=rating_key,
-                                            thumb=thumb
-                                        )
+                            if bAdd:
+                                oc.add(
+                                    TVShowObject(
+                                        key=Callback(GetSeasons,show=rating_key),
+                                        title=title,
+                                        rating_key=rating_key,
+                                        thumb=thumb
                                     )
+                                )
         return oc
 
 
@@ -318,7 +327,7 @@ def DelFromFav(item,itemType):
 def ShowFav():
     oc = ObjectContainer()
     oc.no_cache = True
-    Log(Dict['fav'])
+    Log('{} = {}'.format(L('STRING_FAVOURITES'),Dict['fav']))
     for item in sorted(Dict['fav']['shows']):
         oc.add(DirectoryObject(key=Callback(GetSeasons,show=item),title=Dict["shows"][unicode(item)]["title"]))
     oc.title2 = L('STRING_FAVOURITES')
